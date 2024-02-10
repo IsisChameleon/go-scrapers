@@ -21,6 +21,7 @@ type Article struct {
 	ArticleType string   `json:"article_type"`
 	ArticleLink string   `json:"article_link"`
 	Abstract    string   `json:"abstract"`
+	Doi         string   `json:"doi"`
 }
 
 func extract_search_results(page *rod.Page, browser *rod.Browser) []Article {
@@ -38,9 +39,11 @@ func extract_search_results(page *rod.Page, browser *rod.Browser) []Article {
 		date := el.MustElement("div.data-bottom > div.date").MustText()
 		articleType := el.MustElement("div.data-bottom > div.text > span.article-type").MustText()
 		link := el.MustElement("a").MustProperty("href").String()
+		doiSelector := fmt.Sprintf("#article-results > ul > li:nth-child(%d) > a > div.data-bottom > ul > li.altmetric-embed > div", i)
+		doi := el.MustElement(doiSelector).MustText()
 
 		// Navigate to the article page and extract the abstract
-		articlePage := browser.MustPage(link)
+		el.MustClick().MustWaitStable()
 		abstract := articlePage.MustElement("#__layout > div > div.ArticlePage > div > div.Layout.Layout--withAside.Layout--withIbarMix.ArticleDetails > main > section > div.ArticleDetails__main__content > div > div.JournalFullText > div.JournalAbstract > p").MustText()
 
 		articles = append(articles, Article{
@@ -50,6 +53,7 @@ func extract_search_results(page *rod.Page, browser *rod.Browser) []Article {
 			ArticleType: articleType,
 			ArticleLink: link,
 			Abstract:    abstract,
+			Doi:         doi,
 		})
 	}
 	return articles
@@ -134,7 +138,7 @@ func Example_disable_headless_to_debug() {
 
 	page.MustElement("#search_query_input").MustInput("bacteriophage").MustType(input.Enter)
 
-	articles := extract_search_results(page)
+	articles := extract_search_results(page, browser)
 
 	fmt.Println(articles)
 
