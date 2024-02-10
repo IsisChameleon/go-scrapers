@@ -28,32 +28,34 @@ func extract_search_results(page *rod.Page, browser *rod.Browser) []Article {
 	// Extract the required data
 	var articles []Article
 	elements := page.MustElements("#article-results > ul > li")
-	for i, el := range elements {
+	for _, el := range elements {
 		title := el.MustElement("div.data-top > div.title").MustText()
-		authorEl_Selector := fmt.Sprintf("#article-results > ul > li:nth-child(%d) > a > div.data-top > ul > li", i)
-		authorsEl := page.MustElements(authorEl_Selector)
+		// authorEl_Selector := fmt.Sprintf("#article-results > ul > li:nth-child(%d) > a > div.data-top > ul > li", i)
+		authorsEl := el.MustElements("div.data-top > ul > li")
 		var authors []string
 		for _, authorEl := range authorsEl {
 			authors = append(authors, authorEl.MustText())
 		}
 		date := el.MustElement("div.data-bottom > div.date").MustText()
 		articleType := el.MustElement("div.data-bottom > div.text > span.article-type").MustText()
-		doiSelector := fmt.Sprintf("#article-results > ul > li:nth-child(%d) > a > div.data-bottom > ul > li.altmetric-embed > div", i)
-		doi := page.MustElement(doiSelector).MustText()
+		// doiSelector := fmt.Sprintf("#article-results > ul > li:nth-child(%d) > a > div.data-bottom > ul > li.altmetric-embed > div", i)
+		// doi := el.MustElement(doiSelector).MustText()
+		// log.Printf("New page:")
+		// log.Printf(browser.MustPages().Last().MustInfo().URL)
 
-		el.MustClick().MustWaitStable()
-		newPage := browser.MustPage(browser.MustPages().Last().MustInfo().URL)
-		abstract := newPage.MustElement("#__layout > div > div.ArticlePage > div > div.Layout.Layout--withAside.Layout--withIbarMix.ArticleDetails > main > section > div.ArticleDetails__main__content > div > div.JournalFullText > div.JournalAbstract > p").MustText()
-		link := newPage.MustInfo().URL
+		// el.MustClick().Timeout(5 * time.Second).MustWaitStable()
+		// newPage := browser.MustPage(browser.MustPages().Last().MustInfo().URL)
+		// abstract := newPage.MustElement("#__layout > div > div.ArticlePage > div > div.Layout.Layout--withAside.Layout--withIbarMix.ArticleDetails > main > section > div.ArticleDetails__main__content > div > div.JournalFullText > div.JournalAbstract > p").MustText()
+		// link := newPage.MustInfo().URL
 
 		articles = append(articles, Article{
 			Title:       title,
 			Authors:     authors,
 			PublishedOn: date,
 			ArticleType: articleType,
-			ArticleLink: link,
-			Abstract:    abstract,
-			Doi:         doi,
+			// ArticleLink: link,
+			// Abstract:    abstract,
+			// Doi:         doi,
 		})
 	}
 	return articles
@@ -72,7 +74,7 @@ func scrape() {
 	page := browser.MustPage("https://www.frontiersin.org/search?tab=articles").MustWaitStable()
 
 	page.MustElement("#search_query_input").MustInput("bacteriophage").MustType(input.Enter).MustWaitLoad()
-	time.Sleep(2 * time.Second) // wait for 2 seconds
+	time.Sleep(5 * time.Second) // wait for 2 seconds
 
 	articles := extract_search_results(page, browser)
 	log.Printf("Articles: %s\n", articles)
