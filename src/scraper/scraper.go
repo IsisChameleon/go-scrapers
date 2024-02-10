@@ -62,6 +62,7 @@ func scrape() {
 	page := browser.MustPage("https://www.frontiersin.org/search?tab=articles").MustWaitStable()
 
 	page.MustElement("#search_query_input").MustInput("bacteriophage").MustType(input.Enter).MustWaitLoad()
+	time.Sleep(5 * time.Second) // wait for 5 seconds
 
 	articles := extract_search_results(page)
 	log.Printf("Articles: %s\n", articles)
