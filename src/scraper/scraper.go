@@ -20,9 +20,10 @@ type Article struct {
 	PublishedOn string   `json:"published_on"`
 	ArticleType string   `json:"article_type"`
 	ArticleLink string   `json:"article_link"`
+	Abstract    string   `json:"abstract"`
 }
 
-func extract_search_results(page *rod.Page) []Article {
+func extract_search_results(page *rod.Page, browser *rod.Browser) []Article {
 	// Extract the required data
 	var articles []Article
 	elements := page.MustElements("#article-results > ul > li")
@@ -38,12 +39,17 @@ func extract_search_results(page *rod.Page) []Article {
 		articleType := el.MustElement("div.data-bottom > div.text > span.article-type").MustText()
 		link := el.MustElement("a").MustProperty("href").String()
 
+		// Navigate to the article page and extract the abstract
+		articlePage := browser.MustPage(link)
+		abstract := articlePage.MustElement("div.abstract").MustText()
+
 		articles = append(articles, Article{
 			Title:       title,
 			Authors:     authors,
 			PublishedOn: date,
 			ArticleType: articleType,
 			ArticleLink: link,
+			Abstract:    abstract,
 		})
 	}
 	return articles
@@ -64,7 +70,7 @@ func scrape() {
 	page.MustElement("#search_query_input").MustInput("bacteriophage").MustType(input.Enter).MustWaitLoad()
 	time.Sleep(2 * time.Second) // wait for 2 seconds
 
-	articles := extract_search_results(page)
+	articles := extract_search_results(page, browser)
 	log.Printf("Articles: %s\n", articles)
 
 	// Convert articles to JSON
