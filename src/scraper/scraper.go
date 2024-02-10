@@ -41,7 +41,7 @@ func extract_search_results(page *rod.Page, browser *rod.Browser) []Article {
 
 		// Navigate to the article page and extract the abstract
 		articlePage := browser.MustPage(link)
-		abstract := articlePage.MustElement("div.abstract").MustText()
+		abstract := articlePage.MustElement("#__layout > div > div.ArticlePage > div > div.Layout.Layout--withAside.Layout--withIbarMix.ArticleDetails > main > section > div.ArticleDetails__main__content > div > div.JournalFullText > div.JournalAbstract > p").MustText()
 
 		articles = append(articles, Article{
 			Title:       title,
