@@ -59,7 +59,7 @@ func scrape() {
 	// page := browser.MustPage("https://www.frontiersin.org/search?query=bacteriophage&tab=articles&origin=https%3A%2F%2Fwww.frontiersin.org%2Fjournals").MustWaitLoad()
 	// log.Println("Browser started")
 
-	page := browser.MustPage("https://www.frontiersin.org/search?tab=articles")
+	page := browser.MustPage("https://www.frontiersin.org/search?tab=articles").MustWaitStable()
 
 	page.MustElement("#search_query_input").MustInput("bacteriophage").MustType(input.Enter).MustWaitLoad()
 
