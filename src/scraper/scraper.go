@@ -38,13 +38,13 @@ func extract_search_results(page *rod.Page, browser *rod.Browser) []Article {
 		}
 		date := el.MustElement("div.data-bottom > div.date").MustText()
 		articleType := el.MustElement("div.data-bottom > div.text > span.article-type").MustText()
-		link := el.MustElement("a").MustProperty("href").String()
 		doiSelector := fmt.Sprintf("#article-results > ul > li:nth-child(%d) > a > div.data-bottom > ul > li.altmetric-embed > div", i)
-		doi := el.MustElement(doiSelector).MustText()
+		doi := page.MustElement(doiSelector).MustText()
 
-		// Navigate to the article page and extract the abstract
 		el.MustClick().MustWaitStable()
-		abstract := articlePage.MustElement("#__layout > div > div.ArticlePage > div > div.Layout.Layout--withAside.Layout--withIbarMix.ArticleDetails > main > section > div.ArticleDetails__main__content > div > div.JournalFullText > div.JournalAbstract > p").MustText()
+		newPage := browser.MustPage(browser.MustPages().Last().MustInfo().URL)
+		abstract := newPage.MustElement("#__layout > div > div.ArticlePage > div > div.Layout.Layout--withAside.Layout--withIbarMix.ArticleDetails > main > section > div.ArticleDetails__main__content > div > div.JournalFullText > div.JournalAbstract > p").MustText()
+		link := newPage.MustInfo().URL
 
 		articles = append(articles, Article{
 			Title:       title,
