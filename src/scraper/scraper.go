@@ -64,6 +64,7 @@ func scrape() {
 	page.MustElement("#search_query_input").MustInput("bacteriophage").MustType(input.Enter)
 
 	articles := extract_search_results(page)
+	log.Printf("Articles: %s\n", articles)
 
 	// Convert articles to JSON
 	jsonArticles, err := json.Marshal(articles)
