@@ -25,7 +25,7 @@ type Article struct {
 func extract_search_results(page *rod.Page) []Article {
 	// Extract the required data
 	var articles []Article
-	elements := page.MustElements("#article-results > ul")
+	elements := page.MustElements("#article-results > ul > li")
 	for i, el := range elements {
 		title := el.MustElement("div.data-top > div.title").MustText()
 		authorEl_Selector := fmt.Sprintf("#article-results > ul > li:nth-child(%d) > a > div.data-top > ul", i)
