@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
+	"time"
 
 	"github.com/go-rod/rod"
 )
@@ -55,7 +57,25 @@ func scrape() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%s\n", articles)
+	// Create a unique filename
+	funcName := "scrape"
+	timestamp := time.Now().Format("20060102150405")
+	filename := fmt.Sprintf("%s_%s.json", funcName, timestamp)
+
+	// Open a new file
+	file, err := os.Create(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	// Write the JSON data to the file
+	_, err = file.Write(jsonArticles)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("Data written to file: %s\n", filename)
 }
 
 func main() {
